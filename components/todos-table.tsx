@@ -17,6 +17,10 @@ import {
 } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import React from 'react';
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const TodosTable = ({ todos }: { todos: Todo[] }) => {
   //할일 추가 가능 여부
@@ -30,6 +34,8 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
 
   const router = useRouter();
 
+  // const notifyTodoAddedEvent = () => toast('할일이 성공적으로 추가되었습니다!');
+  const notifyTodoAddedEvent = (msg: string) => toast.success(msg);
   const addATodoHandler = async (title: string) => {
     if (!todoAddEnable) {
       console.log('글자를 입력하세요');
@@ -48,7 +54,8 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
     setNewTodoInput('');
     router.refresh();
     setIsLoading(false);
-
+    // notifyTodoAddedEvent();
+    notifyTodoAddedEvent('할일이 성공적으로 추가되었습니다!');
     console.log(`할일 추가 완료 : ${newTodoInput}`);
   };
 
@@ -83,6 +90,18 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
 
   return (
     <div className='flex flex-col space-y-2'>
+      <ToastContainer
+        position='top-right'
+        autoClose={1800}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme='dark'
+      />
       <div className='flex w-full flex-wrap md:flex-nowrap gap-4'>
         <Input
           type='text'
