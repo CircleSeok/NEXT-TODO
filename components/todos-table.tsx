@@ -14,7 +14,12 @@ import {
   PopoverTrigger,
   PopoverContent,
   Spinner,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
 } from '@nextui-org/react';
+import { VerticalDotsIcon } from './icons';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import React from 'react';
@@ -84,6 +89,22 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
         <TableCell>{aTodo.title}</TableCell>
         <TableCell>{aTodo.is_done ? '완료' : '미완료'}</TableCell>
         <TableCell>{`${aTodo.created_at}`}</TableCell>
+        <TableCell>
+          <div className='relative flex justify-end items-center gap-2'>
+            <Dropdown>
+              <DropdownTrigger>
+                <Button isIconOnly size='sm' variant='light'>
+                  <VerticalDotsIcon className='text-default-300' />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu>
+                <DropdownItem>상세보기</DropdownItem>
+                <DropdownItem>수정</DropdownItem>
+                <DropdownItem>삭제</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        </TableCell>
       </TableRow>
     );
   };
@@ -136,6 +157,7 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
           <TableColumn>할일내용</TableColumn>
           <TableColumn>완료여부</TableColumn>
           <TableColumn>생성일</TableColumn>
+          <TableColumn>액션</TableColumn>
         </TableHeader>
         <TableBody emptyContent={'보여줄 데이터 없음.'}>
           {todos && todos.map((aTodo: Todo) => TodoRow(aTodo))}
