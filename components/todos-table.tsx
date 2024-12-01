@@ -1,6 +1,6 @@
 'use client';
 
-import { Todo } from '@/types';
+import { CustomModalType, FocusedTodoType, Todo } from '@/types';
 import {
   Table,
   TableHeader,
@@ -18,7 +18,14 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
 } from '@nextui-org/react';
+
 import { VerticalDotsIcon } from './icons';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -37,10 +44,50 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
   //로딩 상태
   const [isLoading, setIsLoading] = useState<Boolean>(false);
 
+  //띄우는 모달 상태
+  const [currentModalData, setCurrentModalData] = useState<FocusedTodoType>({
+    focusedTodo: null,
+    modalType: 'detail' as CustomModalType,
+  });
+
   const router = useRouter();
 
   // const notifyTodoAddedEvent = () => toast('할일이 성공적으로 추가되었습니다!');
   const notifyTodoAddedEvent = (msg: string) => toast.success(msg);
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const modalComponent = () => {
+    return (
+      <Modal backdrop='blur' isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className='flex flex-col gap-1'>
+                {currentModalData.modalType}
+              </ModalHeader>
+              <ModalBody>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Nullam pulvinar risus non risus hendrerit venenatis.
+                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <Button color='danger' variant='light' onPress={onClose}>
+                  Close
+                </Button>
+                <Button color='primary' onPress={onClose}>
+                  Action
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    );
+  };
+
   const addATodoHandler = async (title: string) => {
     if (!todoAddEnable) {
       console.log('글자를 입력하세요');
@@ -97,10 +144,18 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
                   <VerticalDotsIcon className='text-default-300' />
                 </Button>
               </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem>상세보기</DropdownItem>
-                <DropdownItem>수정</DropdownItem>
-                <DropdownItem>삭제</DropdownItem>
+              <DropdownMenu
+                onAction={(key) => {
+                  setCurrentModalData({
+                    focusedTodo: aTodo,
+                    modalType: key as CustomModalType,
+                  });
+                  onOpen();
+                }}
+              >
+                <DropdownItem key='detail'>상세보기</DropdownItem>
+                <DropdownItem key='update'>수정</DropdownItem>
+                <DropdownItem key='deleate'>삭제</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -111,6 +166,7 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
 
   return (
     <div className='flex flex-col space-y-2'>
+      {modalComponent()}
       <ToastContainer
         position='top-right'
         autoClose={1800}
