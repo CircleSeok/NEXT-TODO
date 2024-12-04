@@ -33,6 +33,7 @@ import React from 'react';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CustomModal from './custom-modal';
 
 export const TodosTable = ({ todos }: { todos: Todo[] }) => {
   //할일 추가 가능 여부
@@ -61,28 +62,15 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
     return (
       <Modal backdrop='blur' isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className='flex flex-col gap-1'>
-                {currentModalData.modalType}
-              </ModalHeader>
-              <ModalBody>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-              </ModalBody>
-              <ModalFooter>
-                <Button color='danger' variant='light' onPress={onClose}>
-                  Close
-                </Button>
-                <Button color='primary' onPress={onClose}>
-                  Action
-                </Button>
-              </ModalFooter>
-            </>
-          )}
+          {(onClose) =>
+            currentModalData.focusedTodo && (
+              <CustomModal
+                focusedTodo={currentModalData.focusedTodo}
+                modalType={currentModalData.modalType}
+                onClose={onClose}
+              />
+            )
+          }
         </ModalContent>
       </Modal>
     );
