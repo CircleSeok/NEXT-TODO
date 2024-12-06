@@ -11,10 +11,9 @@ import {
   Checkbox,
   Link,
   Switch,
+  CircularProgress,
 } from '@nextui-org/react';
 
-import { VerticalDotsIcon } from './icons';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import React from 'react';
 
@@ -29,13 +28,21 @@ const CustomModal = ({
   focusedTodo,
   modalType,
   onClose,
+  onEdit,
 }: {
   focusedTodo: Todo;
   modalType: CustomModalType;
   onClose: () => void;
+  onEdit: (id: string, title: string, isDone: boolean) => void;
 }) => {
-  // 완료 여부
-  const [isDone, setIsDone] = useState(false);
+  // 수정된 선택
+  const [isDone, setIsDone] = useState(focusedTodo.is_done);
+  // 로딩 상태
+  const [isLoading, setIsLoading] = useState(false);
+  // 수정된 할일 입력
+  const [editedTodoInput, setEditedTodoInput] = useState<string>(
+    focusedTodo.title
+  );
 
   const DetailModal = () => {
     return (
@@ -71,14 +78,19 @@ const CustomModal = ({
             variant='bordered'
             isRequired
             defaultValue={focusedTodo.title}
+            value={editedTodoInput}
+            onValueChange={setEditedTodoInput}
           />
 
           <div className='flex py-2  space-x-4'>
             <span className='font-bold'>완료여부 : </span>
             <Switch
+              onValueChange={setIsDone}
               defaultSelected={focusedTodo.is_done}
               aria-label='Automatic updates'
+              color='warning'
             ></Switch>
+            {`${isDone ? '완료' : '미완료'}`}
           </div>
           <div className='flex py-1  space-x-4'>
             <span className='font-bold'>작성일 : </span>
@@ -86,10 +98,24 @@ const CustomModal = ({
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button color='danger' variant='flat' onPress={onClose}>
-            수정
+          <Button
+            color='warning'
+            variant='flat'
+            onPress={() => {
+              onEdit(focusedTodo.id, editedTodoInput, isDone);
+            }}
+          >
+            {isLoading ? (
+              <CircularProgress
+                size='sm'
+                color='warning'
+                aria-label='Loading'
+              />
+            ) : (
+              '수정'
+            )}
           </Button>
-          <Button color='primary' onPress={onClose}>
+          <Button color='default' onPress={onClose}>
             닫기
           </Button>
         </ModalFooter>

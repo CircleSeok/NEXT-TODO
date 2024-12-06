@@ -54,7 +54,7 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
   const router = useRouter();
 
   // const notifyTodoAddedEvent = () => toast('할일이 성공적으로 추가되었습니다!');
-  const notifyTodoAddedEvent = (msg: string) => toast.success(msg);
+  const notifySuccessEvent = (msg: string) => toast.success(msg);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -68,6 +68,10 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
                 focusedTodo={currentModalData.focusedTodo}
                 modalType={currentModalData.modalType}
                 onClose={onClose}
+                onEdit={async (id, title, isDone) => {
+                  await editATodoHandler(id, title, isDone);
+                  onClose();
+                }}
               />
             )
           }
@@ -95,8 +99,31 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
     router.refresh();
     setIsLoading(false);
     // notifyTodoAddedEvent();
-    notifyTodoAddedEvent('할일이 성공적으로 추가되었습니다!');
+    notifySuccessEvent('할일 추가 완료');
     console.log(`할일 추가 완료 : ${newTodoInput}`);
+  };
+
+  const editATodoHandler = async (
+    id: string,
+    editedTitle: string,
+    editedIsDone: boolean
+  ) => {
+    setIsLoading(true);
+    await new Promise((f) => setTimeout(f, 600));
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/todos/${id}`, {
+      method: 'post',
+      body: JSON.stringify({
+        title: editedTitle,
+        is_done: editedIsDone,
+      }),
+      cache: 'no-store',
+    });
+
+    router.refresh();
+    setIsLoading(false);
+    // notifyTodoAddedEvent();
+    notifySuccessEvent('할일 수정 완료');
+    console.log(`할일 수정 완료 : ${newTodoInput}`);
   };
 
   const disabledTodoAddButton = () => {
