@@ -29,11 +29,13 @@ const CustomModal = ({
   modalType,
   onClose,
   onEdit,
+  onDelete,
 }: {
   focusedTodo: Todo;
   modalType: CustomModalType;
   onClose: () => void;
   onEdit: (id: string, title: string, isDone: boolean) => void;
+  onDelete: (id: string) => void;
 }) => {
   // 수정된 선택
   const [isDone, setIsDone] = useState(focusedTodo.is_done);
@@ -47,16 +49,26 @@ const CustomModal = ({
   const DetailModal = () => {
     return (
       <>
-        <ModalHeader className='flex flex-col gap-1'>{modalType}</ModalHeader>
+        <ModalHeader className='flex flex-col gap-1'>할일 상세</ModalHeader>
         <ModalBody>
-          <p>상세 모달</p>
+          <p>
+            <span className='font-bold'>할일 내용 : </span>
+            {focusedTodo.title}
+          </p>
+
+          <div className='flex py-2  space-x-4'>
+            <span className='font-bold'>완료여부 : </span>
+
+            {`${focusedTodo.is_done ? '완료' : '미완료'}`}
+          </div>
+          <div className='flex py-1  space-x-4'>
+            <span className='font-bold'>작성일 : </span>
+            <p> {`${focusedTodo.created_at}`}</p>
+          </div>
         </ModalBody>
         <ModalFooter>
-          <Button color='danger' variant='light' onPress={onClose}>
+          <Button color='default' onPress={onClose}>
             닫기
-          </Button>
-          <Button color='primary' onPress={onClose}>
-            액션
           </Button>
         </ModalFooter>
       </>
@@ -101,8 +113,10 @@ const CustomModal = ({
           <Button
             color='warning'
             variant='flat'
-            onPress={() => {
-              onEdit(focusedTodo.id, editedTodoInput, isDone);
+            onPress={async () => {
+              setIsLoading(true);
+              await onEdit(focusedTodo.id, editedTodoInput, isDone);
+              setIsLoading(false);
             }}
           >
             {isLoading ? (
@@ -125,16 +139,41 @@ const CustomModal = ({
   const DeleteModal = () => {
     return (
       <>
-        <ModalHeader className='flex flex-col gap-1'>{modalType}</ModalHeader>
+        <ModalHeader className='flex flex-col gap-1'>할일 삭제</ModalHeader>
         <ModalBody>
-          <p>삭제 모달</p>
+          <p>
+            <span className='font-bold'>할일 내용 : </span>
+            {focusedTodo.title}
+          </p>
+
+          <div className='flex py-2  space-x-4'>
+            <span className='font-bold'>완료여부 : </span>
+
+            {`${focusedTodo.is_done ? '완료' : '미완료'}`}
+          </div>
+          <div className='flex py-1  space-x-4'>
+            <span className='font-bold'>작성일 : </span>
+            <p> {`${focusedTodo.created_at}`}</p>
+          </div>
         </ModalBody>
         <ModalFooter>
-          <Button color='danger' variant='light' onPress={onClose}>
-            닫기
+          <Button
+            color='danger'
+            variant='flat'
+            onPress={async () => {
+              setIsLoading(true);
+              await onDelete(focusedTodo.id);
+              setIsLoading(false);
+            }}
+          >
+            {isLoading ? (
+              <CircularProgress size='sm' color='danger' aria-label='Loading' />
+            ) : (
+              '삭제'
+            )}
           </Button>
-          <Button color='primary' onPress={onClose}>
-            액션
+          <Button color='default' onPress={onClose}>
+            닫기
           </Button>
         </ModalFooter>
       </>

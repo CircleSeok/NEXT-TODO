@@ -72,6 +72,10 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
                   await editATodoHandler(id, title, isDone);
                   onClose();
                 }}
+                onDelete={async (id) => {
+                  await deleteTodoHandler(id);
+                  onClose();
+                }}
               />
             )
           }
@@ -124,6 +128,21 @@ export const TodosTable = ({ todos }: { todos: Todo[] }) => {
     // notifyTodoAddedEvent();
     notifySuccessEvent('할일 수정 완료');
     console.log(`할일 수정 완료 : ${newTodoInput}`);
+  };
+
+  const deleteTodoHandler = async (id: string) => {
+    setIsLoading(true);
+    await new Promise((f) => setTimeout(f, 600));
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/todos/${id}`, {
+      method: 'delete',
+      cache: 'no-store',
+    });
+
+    router.refresh();
+    setIsLoading(false);
+    // notifyTodoAddedEvent();
+    notifySuccessEvent('할일 삭제 완료');
+    console.log(`할일 삭제 완료 : ${newTodoInput}`);
   };
 
   const disabledTodoAddButton = () => {
